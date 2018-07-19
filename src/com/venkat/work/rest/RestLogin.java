@@ -58,9 +58,117 @@ public class RestLogin {
         return null;
     }
 
+    public void elasticAliasing(){
+        try {
+            URL myUrl = new URL("http://localhost:9200/_cat/indices");
+
+            HttpURLConnection connection = (HttpURLConnection)myUrl.openConnection();
+
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("User-Agent","Mozilla/4.0");
+            connection.setRequestProperty("Content-Type","application/json; charset=UTF-8");
+            connection.setRequestProperty("Content-Language","en-US");
+            connection.setDoOutput(true);
+
+            if(connection.getResponseCode() == 200){
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                String line;
+                while((line = bufferedReader.readLine()) != null){
+                    System.out.println(line);
+                }
+            }
+
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /*
+
+        import java.net.URL
+        import java.net.HttpURLConnection
+        import java.nio.charset.StandardCharsets
+        import groovy.json.JsonSlurper
+        import groovy.json.JsonOutput
+        import org.apache.commons.io.IOUtils
+
+        def flowFile = session.get()
+
+        if(flowFile == null){
+            flowFile = session.create()
+        }
+
+        def errorMessage = null
+        def outputRelation = REL_SUCESS
+
+        def responseCode
+
+        flowFile = session.write(flowFile, {inputStream, outputStream ->
+            def urlStr = ''
+            try{
+                urlStr = flowFile.getAttribute("urlString")
+                urlStr = urlStr.trim()
+                urlStr += "_cat/indices?format=json&pretty"
+                def requiredIndex = [:]
+                def url = new URL(urlStr)
+
+                HttpURLConnection connection = (HttpURLConnection)myUrl.openConnection()
+
+                connection.setRequestMethod("GET")
+                connection.setRequestProperty("User-Agent","Mozilla/4.0")
+                connection.setRequestProperty("Content-Type","application/json; charset=UTF-8")
+                connection.setRequestProperty("Content-Language","en-US")
+                connection.setDoOutput(true)
+
+                if(connection.responseCode == 200){
+                    def jsonResponse = connection.inputStream.withCloseable{ inStream ->
+                        new JsonSlurper().parse(inStream)
+                    }
+
+                    for(rec in jsonResponse){
+                        rec.earch{k,v ->
+                            if(k == "index"){
+                                if(v == "my_index_v"){
+                                    requiredIndex.index = "my_index_v2"
+                                }else if(v == "my_index_v2"){
+                                    requiredIndex.index = "my_index_v"
+                                }else{
+                                    //this is the first time they are running
+                                    requiredIndex.index = "my_index_v"
+                                }
+                            }
+
+                        }
+                    }
+                }else{
+                    requiredIndex.index = "my_index_v"
+                }
+
+                def json = JsonOutput.toJson(requiredIndex)
+
+                outputStream.write(JsonOutput.prettyPrint(json).getBytes(StandardCharsets.UTF-8))
+            }catch(Exception e){
+                errorMessage = "404"
+                outputRelation = REL_FAILURE
+            }
+        } as StreamCallback)
+
+        if(errorMessage != null){
+            flowFile = session.putAttribute(flowFile,"parseUrl.error", 200)
+        }else{
+            flowFile = session.putAttribute(flowFile,"parseUrl.sucess", 200)
+        }
+
+        session.transfer(flowFile,outputRelation)
+
+
+     */
+
     public static void main(String[] args) {
-        String token = new RestLogin().getToken();
-        System.out.println("Token: " + token);
+        /*String token = new RestLogin().getToken();
+        System.out.println("Token: " + token);*/
+
+        new RestLogin().elasticAliasing();
     }
 }
 
