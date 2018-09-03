@@ -31,6 +31,15 @@ public class SchedulingTasksForFixedDelayRepeatedExecution {
         System.out.println("[" + currentThreadName + "] Task-1 scheduled for " +
                 dateFormat.format(scheduledTime) + " and then repeatedly at an interval of every " + intervalMillis/1000 + " seconds!");
 
+        long delaylMillis = 4000;
+        long intervalMillis2 = 2000;
+
+        timer.schedule(new ScheduledTaskA(1000),delaylMillis, intervalMillis2);
+
+        System.out.println("[" + currentThreadName + "] Task-2 scheduled for " + delaylMillis/1000 +
+               " seconds after " + dateFormat.format(currentTime) + " and then repeatedly at an interval of every "
+                + intervalMillis2/1000 + " seconds!");
+
         TimeUnit.MILLISECONDS.sleep(16000);
 
         System.out.println("[" + currentThreadName + "] CANCELLING THE NOW... " );
